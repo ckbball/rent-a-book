@@ -10,7 +10,14 @@ const BookSchema = new mongoose.Schema(
       unique: true,
       required: [true, "can't be blank"],
       match: [/^[a-zA-Z0-9]+$/, "is invalid"],
-      index: true
+      index: true,
+      minLength: 4,
+      maxLength: 32
+    },
+    slug: {
+      type: String,
+      lowercase: true,
+      unique: true
     },
     summary: {
       type: String,
