@@ -35,6 +35,8 @@ const UserSchema = new mongoose.Schema(
       type: String
     },
     following: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    wish_list: [{ type: mongoose.Schema.Types.ObjectId, ref: "Book" }],
+    purchased: [{ type: mongoose.Schema.Types.ObjectId, ref: "Book" }],
     date: {
       type: Date,
       default: Date.now
@@ -53,13 +55,13 @@ UserSchema.methods.toProfileJSONFor = function(user) {
     bio: this.bio,
     avatar: this.avatar,
     date: this.date,
-    following: user ? user.isFollowing(this._id) : false
+    following: user ? user.isFollowing(this._id) : false,
+    wish_list: this.wish_list
   };
 };
 
 // called when logged in user is requesting their own profile
 UserSchema.methods.toAuthJSON = function() {
-
   return {
     name: this.name,
     email: this.email,
@@ -68,6 +70,8 @@ UserSchema.methods.toAuthJSON = function() {
     username: this.username,
     bio: this.bio,
     following: this.following,
+    wish_list: this.wish_list,
+    purchased: this.purchased,
     status: "my profile"
   };
 };
@@ -88,6 +92,40 @@ UserSchema.methods.unfollow = function(id) {
 
 UserSchema.methods.isFollowing = function(id) {
   return this.following.filter(
+    followId => followId.toString() === id.toString()
+  );
+};
+
+UserSchema.methods.addToWishList = function(id) {
+  if (typeof this.wish_list === "undefined") this.wish_list = [id];
+  if (this.wish_list.indexOf(id) === -1) {
+    this.wish_list.push(id);
+  }
+  return this.save;
+};
+
+UserSchema.methods.removeFromWishList = function(id) {
+  this.wish_list.remove(id);
+
+  return this.save();
+};
+
+UserSchema.methods.isWish = function(id) {
+  return this.wish_list.filter(
+    followId => followId.toString() === id.toString()
+  );
+};
+
+UserSchema.methods.purchase = function(id) {
+  if (typeof this.purchased === "undefined") this.purchased = [id];
+  if (this.purchased.indexOf(id) === -1) {
+    this.purchased.push(id);
+  }
+  return this.save;
+};
+
+UserSchema.methods.isPurchased = function(id) {
+  return this.purchased.filter(
     followId => followId.toString() === id.toString()
   );
 };
