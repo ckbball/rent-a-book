@@ -18,6 +18,17 @@ const ChapterSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Book"
     },
+    chapter_number: {
+      type: Number
+    },
+    next_chapter: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Chapter"
+    },
+    prev_chapter: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Chapter"
+    },
     content: {
       type: String,
       minLength: 128
@@ -34,7 +45,10 @@ ChapterSchema.methods.toProfileJSONFor = function(user) {
     title: this.title,
     word_count: this.word_count,
     book: this.book,
-    content: this.content
+    content: this.content,
+    next_chapter: this.next_chapter,
+    prev_chapter: this.prev_chapter,
+    chapter_number: this.chapter_number
   };
 };
 
@@ -44,8 +58,17 @@ ChapterSchema.methods.toAuthJSON = function() {
     title: this.title,
     word_count: this.word_count,
     book: this.book,
-    content: this.content
+    content: this.content,
+    next_chapter: this.next_chapter,
+    prev_chapter: this.prev_chapter,
+    chapter_number: this.chapter_number
   };
 };
+
+// methods to be added
+// addNextChapter
+// addPrevChapter
+// updateContent
+//
 
 module.exports = Chapter = mongoose.model("Chapter", ChapterSchema);
